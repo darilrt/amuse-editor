@@ -79,6 +79,9 @@ void InspectorEditor::on_gui()
     {
         for (auto &pair : editor->engine->component_registry->factories)
         {
+            if (pair.first == "MissingComponent")
+                continue;
+
             if (ImGui::MenuItem(pair.first.c_str()))
             {
                 auto component = pair.second();
