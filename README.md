@@ -1,5 +1,5 @@
-# Amuse Editor
-This is editor for Amuse engine. It is written in C++ and uses SDL2 for rendering and input handling.
+# Amuse Editor 
+Amuse is a multiplatform 2D/3D game engine written in C++. This is the editor for the engine.
 
 ## Screenshots
 
