@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Project name
 project(AmuseEditor)
-set(project_name "AmuseEditor")
 
 # Add the executable
 file(GLOB_RECURSE SOURCES 
@@ -14,22 +13,22 @@ file(GLOB_RECURSE SOURCES
     src/editor/*.cpp
     src/editor/windows/*.cpp)
     
-add_executable(${project_name} ${SOURCES})
+add_executable(AmuseEditor ${SOURCES})
 
 # Add the include directory
-target_include_directories(${project_name} PUBLIC include)
+target_include_directories(AmuseEditor PUBLIC include)
 
 # Add the library
 add_subdirectory(core)
 
 # Link the library
-target_link_libraries(${project_name} AmuseCore)
+target_link_libraries(AmuseEditor AmuseCore)
 
 # Copy shared libraries
-add_custom_command(TARGET ${project_name} POST_BUILD
+add_custom_command(TARGET AmuseEditor POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     $<TARGET_FILE_DIR:AmuseCore>
-    $<TARGET_FILE_DIR:${project_name}>)
+    $<TARGET_FILE_DIR:AmuseEditor>)
 
 # Copy assets
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})

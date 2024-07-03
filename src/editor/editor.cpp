@@ -22,6 +22,8 @@
 #include "editor/windows/preferences.hpp"
 #include "visual_editor/visual_component.hpp"
 
+#include "debug_component.hpp"
+
 #include "icons.hpp"
 
 Editor::Editor() : window("Amuse Editor", 1280, 720)
@@ -42,6 +44,8 @@ void Editor::create_project(const std::filesystem::path &path)
 {
     std::filesystem::create_directory(path);
     std::filesystem::create_directory(path / "assets");
+    std::filesystem::create_directory(path / "assets" / "components");
+    std::filesystem::create_directory(path / "packages");
 }
 
 void Editor::open_project(const std::filesystem::path &path)
@@ -70,6 +74,7 @@ void Editor::load_components()
     };
 
     engine->reset_component_registry();
+    engine->component_registry->register_component<DebugComponent>("DebugComponent");
 
     loader->free();
 
@@ -106,6 +111,11 @@ void Editor::load_components()
 void Editor::check_components_reload()
 {
     const auto from_dll_path = current_project_path / "build" / "libTestProject.dll";
+
+    if (!std::filesystem::exists(from_dll_path))
+    {
+        return;
+    }
 
     auto stamp = std::filesystem::last_write_time(from_dll_path).time_since_epoch().count();
 
@@ -324,7 +334,7 @@ void Editor::run()
     register_window<VisualComponentEditor>("Visual Component");
 
     /// DEBUG PROPOSAL
-    open_project("C:/amuse/projects/Test");
+    // open_project("C:/amuse/projects/Test");
 
     while (window.is_open)
     {
@@ -436,6 +446,23 @@ void Editor::run()
 
             pair.second.window->on_pop_style();
         }
+
+        ImGui::Begin("Debug");
+        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+
+        if (ImGui::Button("Start Components"))
+        {
+            if (engine->root_actor)
+                engine->root_actor->start();
+        }
+
+        if (ImGui::Button("Update Components"))
+        {
+            if (engine->root_actor)
+                engine->root_actor->update();
+        }
+
+        ImGui::End();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
