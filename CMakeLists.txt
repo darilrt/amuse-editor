@@ -31,4 +31,4 @@ add_custom_command(TARGET AmuseEditor POST_BUILD
     $<TARGET_FILE_DIR:AmuseEditor>)
 
 # Copy assets
-file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY data DESTINATION ${CMAKE_BINARY_DIR})

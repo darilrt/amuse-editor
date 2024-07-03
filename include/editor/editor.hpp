@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <filesystem>
 #include <string>
+#include <toml.hpp>
 
 #include <core.hpp>
 #include <types.hpp>
@@ -33,6 +34,8 @@ public:
     Function<void(Editor *editor)> status_callback;
     EditorPreferences preferences;
 
+    toml::value project_config;
+
     Unique<Loader> loader;
     uint64_t loader_dll_stamp;
 
@@ -55,7 +58,7 @@ public:
         return std::static_pointer_cast<T>(windows[name].window);
     }
 
-    void create_project(const std::filesystem::path &path);
+    void create_project(const std::filesystem::path &path, const std::string &name);
 
     void open_project(const std::filesystem::path &path);
 

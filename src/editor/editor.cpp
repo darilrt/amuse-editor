@@ -1,6 +1,7 @@
 #include <fstream>
 
 #include <SDL2/SDL.h>
+#include <toml.hpp>
 
 #include "editor/editor.hpp"
 #include "core/event_system.hpp"
@@ -23,7 +24,7 @@
 #include "visual_editor/visual_component.hpp"
 
 #include "debug_component.hpp"
-
+#include "create_project.hpp"
 #include "icons.hpp"
 
 Editor::Editor() : window("Amuse Editor", 1280, 720)
@@ -40,12 +41,9 @@ Editor::Editor() : window("Amuse Editor", 1280, 720)
     loader = new_unique<Loader>();
 }
 
-void Editor::create_project(const std::filesystem::path &path)
+void Editor::create_project(const std::filesystem::path &path, const std::string &name)
 {
-    std::filesystem::create_directory(path);
-    std::filesystem::create_directory(path / "assets");
-    std::filesystem::create_directory(path / "assets" / "components");
-    std::filesystem::create_directory(path / "packages");
+    create_project(path, name);
 }
 
 void Editor::open_project(const std::filesystem::path &path)
@@ -54,6 +52,22 @@ void Editor::open_project(const std::filesystem::path &path)
                { ImGui::Text("Opening project %s", path.string().c_str()); });
 
     current_project_path = path;
+
+    auto conf_path = path / "project.toml";
+
+    if (!std::filesystem::exists(conf_path))
+    {
+        logger.error("Project not found: {}", conf_path.string());
+        return;
+    }
+
+    project_config = toml::parse(conf_path.string());
+
+    if (!project_config.contains("name"))
+    {
+        logger.error("Invalid project name config: {}", conf_path.string());
+        return;
+    }
 
     load_components();
 
@@ -78,7 +92,9 @@ void Editor::load_components()
 
     loader->free();
 
-    auto from_dll_path = current_project_path / "build" / "libTestProject.dll";
+    std::string project_name = toml::find<std::string>(project_config, "name");
+
+    auto from_dll_path = current_project_path / "build" / ("lib" + project_name + ".dll");
     auto dll_path = current_project_path / "build" / "components.dll";
 
     if (!std::filesystem::exists(from_dll_path))
@@ -110,7 +126,14 @@ void Editor::load_components()
 
 void Editor::check_components_reload()
 {
-    const auto from_dll_path = current_project_path / "build" / "libTestProject.dll";
+    if (current_project_path == "")
+    {
+        return;
+    }
+
+    std::string project_name = toml::find<std::string>(project_config, "name");
+
+    const auto from_dll_path = current_project_path / "build" / ("lib" + project_name + ".dll");
 
     if (!std::filesystem::exists(from_dll_path))
     {
@@ -242,7 +265,7 @@ void Editor::main_menu_bar()
         {
             std::filesystem::path project_path = workspace_path / project_name;
 
-            create_project(project_path);
+            create_project(project_path, project_name);
 
             project_name == "";
 

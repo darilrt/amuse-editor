@@ -81,6 +81,10 @@
     "fstream": "cpp",
     "filesystem": "cpp",
     "codecvt": "cpp",
-    "forward_list": "cpp"
+    "forward_list": "cpp",
+    "coroutine": "cpp",
+    "map": "cpp",
+    "xstddef": "cpp",
+    "xtree": "cpp"
   }
 }

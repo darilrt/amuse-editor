@@ -6,7 +6,7 @@ float icon_size = 25.0f;
 void load_icons_texture()
 {
     icons_texture = Texture::from_file(
-        "assets/icons/icons.png",
+        "data/icons/icons.png",
         gfx::SamplerFilter::Nearest,
         gfx::SamplerFilter::Nearest,
         gfx::SamplerWrap::ClampToEdge,
