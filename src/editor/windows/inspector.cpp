@@ -3,7 +3,7 @@
 #include "imgui/imgui.h"
 #include "icons.hpp"
 
-void draw_component_helpers(Actor *actor, Editor *editor)
+void draw_component_helpers(Actor *actor, Editor *editor, InspectorEditor *inspector)
 {
     std::vector<Shared<Component>> to_remove;
 
@@ -29,6 +29,17 @@ void draw_component_helpers(Actor *actor, Editor *editor)
 
         if (open)
         {
+            auto custom_inspector = inspector->get_custom_inspector(component->_name);
+
+            if (custom_inspector)
+            {
+                custom_inspector->on_inspector();
+            }
+            else
+            {
+                ImGui::Text("No inspector for %s", component->_name.c_str());
+            }
+
             ImGui::TreePop();
         }
         ImGui::PopID();
@@ -44,6 +55,16 @@ void draw_component_helpers(Actor *actor, Editor *editor)
 
 void InspectorEditor::on_init()
 {
+    class DebugComponentInspector
+    {
+    public:
+        static void on_inspector()
+        {
+            ImGui::Button("Debug inspector");
+        };
+    };
+
+    register_custom_inspector<DebugComponentInspector>("DebugComponent");
 }
 
 void InspectorEditor::on_gui()
@@ -68,7 +89,7 @@ void InspectorEditor::on_gui()
     }
     ImGui::Separator();
 
-    draw_component_helpers(editor->selected_actor.get(), editor);
+    draw_component_helpers(editor->selected_actor.get(), editor, this);
 
     if (ImGui::Button("Add Component", ImVec2(-1, 0)))
     {

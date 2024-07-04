@@ -21,6 +21,7 @@
 #include "editor/windows/scene.hpp"
 #include "editor/windows/inspector.hpp"
 #include "editor/windows/preferences.hpp"
+#include "editor/windows/console.hpp"
 #include "visual_editor/visual_component.hpp"
 
 #include "debug_component.hpp"
@@ -43,15 +44,13 @@ Editor::Editor() : window("Amuse Editor", 1280, 720)
 
 void Editor::create_project(const std::filesystem::path &path, const std::string &name)
 {
-    create_project(path, name);
+    ::create_project(path, name);
 }
 
 void Editor::open_project(const std::filesystem::path &path)
 {
     set_status([this, path](Editor *editor)
                { ImGui::Text("Opening project %s", path.string().c_str()); });
-
-    current_project_path = path;
 
     auto conf_path = path / "project.toml";
 
@@ -60,6 +59,8 @@ void Editor::open_project(const std::filesystem::path &path)
         logger.error("Project not found: {}", conf_path.string());
         return;
     }
+
+    current_project_path = path;
 
     project_config = toml::parse(conf_path.string());
 
@@ -353,8 +354,9 @@ void Editor::run()
     register_window<FilesEditor>("Files");
     register_window<SceneEditor>("Scene");
     register_window<InspectorEditor>("Inspector");
-    register_window<PreferencesEditor>("Preferences");
-    register_window<VisualComponentEditor>("Visual Component");
+    register_window<ConsoleEditor>("Console");
+    // register_window<PreferencesEditor>("Preferences");
+    // register_window<VisualComponentEditor>("Visual Component");
 
     /// DEBUG PROPOSAL
     // open_project("C:/amuse/projects/Test");

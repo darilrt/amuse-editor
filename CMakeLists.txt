@@ -26,9 +26,15 @@ target_link_libraries(AmuseEditor AmuseCore)
 
 # Copy shared libraries
 add_custom_command(TARGET AmuseEditor POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    $<TARGET_FILE_DIR:AmuseCore>
+    COMMAND ${CMAKE_COMMAND} -E copy
+    $<TARGET_RUNTIME_DLLS:AmuseEditor>
     $<TARGET_FILE_DIR:AmuseEditor>)
-
-# Copy assets
+    
 file(COPY data DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY core DESTINATION ${CMAKE_BINARY_DIR}/data)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/data/core/lib/)
+
+add_custom_command(TARGET AmuseEditor POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    $<TARGET_LINKER_FILE:AmuseCore>
+    ${CMAKE_BINARY_DIR}/data/core/lib/)
