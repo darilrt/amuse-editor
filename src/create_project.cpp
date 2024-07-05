@@ -7,50 +7,40 @@
 
 const std::string __cmake_file(const std::string &name)
 {
-    return "cmake_minimum_required(VERSION 3.5)\n\n"
-           "# C++ standard\n"
-           "set(CMAKE_CXX_STANDARD 20)\n"
-           "set(CMAKE_CXX_STANDARD_REQUIRED ON)\n\n"
-           "# Project name\n"
-           "project(" +
-           name + ")\n"
-                  "set(project_name \"" +
-           name + "\")\n\n"
-                  "# Add definition for shared library\n"
-                  "add_compile_definitions(AMUSE_CORE_EXPORT)\n\n"
-                  "# Add source files\n"
-                  "file(GLOB_RECURSE source_files assets/components/*.cpp)\n\n"
-                  "# Add library\n"
-                  "add_library(\n"
-                  "    ${project_name} SHARED \n"
-                  "    engine/components.cpp\n"
-                  "    ${source_files})\n\n"
-                  "# Include directories\n"
-                  "target_include_directories(${project_name} PUBLIC \"assets/components\")\n"
-                  "target_include_directories(${project_name} PUBLIC \"engine/core/include\")\n\n"
-                  "# Link the library\n"
-                  "target_link_directories(${project_name} PUBLIC ${CMAKE_SOURCE_DIR}/engine/core/lib)\n"
-                  "target_link_libraries(${project_name} AmuseCore)\n";
+    std::ifstream file(std::filesystem::current_path() / "data" / "templates" / "cmake_components.txt");
+    std::string source((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+    file.close();
+
+    size_t pos = 0;
+
+    while ((pos = source.find("@name", pos)) != std::string::npos)
+    {
+        source.replace(pos, 5, name);
+        pos += name.length();
+    }
+
+    return source;
 }
 
 const std::string __components_cpp(const std::string &name)
 {
-    return "#include \"components.hpp\"\n\n"
-           "# Use REGISTER_COMPONENT macro to register components inside the COMPONENTS function\n"
-           "COMPONENTS\n"
-           "{\n"
-           "//    REGISTER_COMPONENT(ComponentName);\n"
-           "}\n";
+    std::ifstream file(std::filesystem::current_path() / "data" / "templates" / "components.cpp");
+    std::string source((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+    file.close();
+
+    return source;
 }
 
 const std::string __components_hpp(const std::string &name)
 {
-    return "#pragma once\n\n"
-           "#include <dll.hpp>\n"
-           "#include <core.hpp>\n\n"
-           "#define REGISTER_COMPONENT(C) engine->component_registry->register_component<C>(#C)\n\n"
-           "#define COMPONENTS void loader(Engine *engine)\n\n"
-           "extern \"C\" AMUSE_API void loader(Engine *engine);\n";
+    std::ifstream file(std::filesystem::current_path() / "data" / "templates" / "components.hpp");
+    std::string source((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+    file.close();
+
+    return source;
 }
 
 void create_project(const std::filesystem::path &path, const std::string &name)

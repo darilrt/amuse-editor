@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-# C++ standard
+# C++ standard\n
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -16,15 +16,14 @@ file(GLOB_RECURSE source_files assets/components/*.cpp)
 
 # Add library
 add_library(
-    ${project_name} SHARED 
-    packages/components.cpp
+    ${project_name} SHARED
+    engine/components.cpp
     ${source_files})
 
 # Include directories
 target_include_directories(${project_name} PUBLIC "assets/components")
-
-# Add the library
-add_subdirectory(packages/core)
+target_include_directories(${project_name} PUBLIC "engine/core/include")
 
 # Link the library
+target_link_directories(${project_name} PUBLIC ${CMAKE_SOURCE_DIR}/engine/core/lib)
 target_link_libraries(${project_name} AmuseCore)

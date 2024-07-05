@@ -3,6 +3,8 @@
 #include "imgui/imgui.h"
 #include "icons.hpp"
 
+#include "inspectors/transform.hpp"
+
 void draw_component_helpers(Actor *actor, Editor *editor, InspectorEditor *inspector)
 {
     std::vector<Shared<Component>> to_remove;
@@ -65,6 +67,7 @@ void InspectorEditor::on_init()
     };
 
     register_custom_inspector<DebugComponentInspector>("DebugComponent");
+    register_custom_inspector<TransformInspector>("Transform");
 }
 
 void InspectorEditor::on_gui()

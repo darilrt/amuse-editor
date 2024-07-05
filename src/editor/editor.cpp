@@ -222,6 +222,12 @@ void Editor::main_menu_bar()
 
             ImGui::Separator();
 
+            if (ImGui::MenuItem("Export"))
+            {
+            }
+
+            ImGui::Separator();
+
             if (ImGui::MenuItem("Preferences"))
             {
             }
