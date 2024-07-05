@@ -1,14 +1,11 @@
-from svglib.svglib import svg2rlg
+from cairosvg import svg2png
 
 import pygame
 import os
 import io
 
-ICON_SIZE = 50
+ICON_SIZE = 16 * 10
 ICON_PADDING = 5
-
-PX2MM = 3.7795275591
-MM2PX = 1 / PX2MM
 
 HEADER_TEMPLATE = """\
 #pragma once
@@ -22,11 +19,17 @@ extern float icon_size;
 void load_icons_texture();
 
 """
-
 class UVImage:
     def __init__(self, name, uv):
         self.name = name
         self.uv = uv
+
+def load_icon_as_sf(path):
+    with open(path, "rb") as file:
+        data = file.read()
+        png = svg2png(data)
+
+        return pygame.image.load(io.BytesIO(png))
 
 def get_icons():
     dir = "icons"
@@ -40,16 +43,16 @@ def get_icons():
 
 def scale_svg(sf, size):
     aspect = sf.get_width() / sf.get_height()
-    x = size[0] * PX2MM
-    y = size[1] * PX2MM / aspect 
+    x = size[0]
+    y = size[1] / aspect 
     return pygame.transform.scale(sf, (int(x), int(y)))
 
 def create_centered_surface(sf, size):
     new_sf = pygame.Surface(size, pygame.SRCALPHA)
     new_sf.fill((0, 0, 0, 0))
 
-    x = (size[0] - sf.get_width() * MM2PX) // 2
-    y = (size[1] - sf.get_height() * MM2PX) // 2
+    x = (size[0] - sf.get_width()) // 2
+    y = (size[1] - sf.get_height()) // 2
 
     new_sf.blit(sf, (x, y))
 
@@ -94,7 +97,7 @@ def convert_icons():
 
     x, y = 0, 0
     for icon in icons:
-        sf = pygame.image.load(f"icons/{icon}")
+        sf = load_icon_as_sf(f"icons/{icon}")
         sf = scale_svg(sf, (ICON_SIZE, ICON_SIZE))
         sf = create_centered_surface(sf, (ICON_SIZE, ICON_SIZE))
         sf = create_padding_surface(sf, ICON_PADDING)
@@ -120,7 +123,7 @@ def convert_icons():
             x = 0
             y += 1
     
-    pygame.image.save(end_sf, "assets/icons/icons.png")
+    pygame.image.save(end_sf, "data/icons/icons.png")
 
     generate_header(uvs)
 

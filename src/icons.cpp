@@ -1,7 +1,7 @@
 #include "icons.hpp"
 
 Shared<Texture> icons_texture;
-float icon_size = 25.0f;
+float icon_size = 20.0f;
 
 void load_icons_texture()
 {

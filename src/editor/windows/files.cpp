@@ -7,6 +7,7 @@
 #include "imgui/imgui_internal.h"
 #include "editor/editor.hpp"
 #include "icons.hpp"
+#include "templates.hpp"
 
 static std::filesystem::path rename_path;
 
@@ -63,8 +64,19 @@ void rename_file_or_folder_helper(std::filesystem::path path)
     }
 }
 
+struct
+{
+    std::filesystem::path path;
+} __state_new_component;
+
+struct
+{
+    bool open_new_component = false;
+} _state_file_context_menu_helper;
+
 void file_context_menu_helper(std::filesystem::path path, Editor *editor)
 {
+
     if (ImGui::BeginPopupContextItem())
     {
         if (std::filesystem::is_regular_file(path) && ImGui::MenuItem("Open"))
@@ -96,6 +108,12 @@ void file_context_menu_helper(std::filesystem::path path, Editor *editor)
                 file.close();
 
                 rename_path = path / "new_actor.actor";
+            }
+
+            if (ImGui::MenuItem("C++ Component"))
+            {
+                _state_file_context_menu_helper.open_new_component = true;
+                __state_new_component.path = path;
             }
 
             ImGui::EndMenu();
@@ -134,6 +152,8 @@ void file_context_menu_helper(std::filesystem::path path, Editor *editor)
 
         ImGui::EndPopup();
     }
+
+    return;
 }
 
 void draw_directory_helper(const std::filesystem::path &path, Editor *editor)
@@ -279,5 +299,39 @@ void FilesEditor::on_gui()
         draw_directory_helper(asset_path, editor);
 
         ImGui::TreePop();
+    }
+
+    if (_state_file_context_menu_helper.open_new_component)
+    {
+        ImGui::OpenPopup("Create C++ Component");
+        _state_file_context_menu_helper.open_new_component = false;
+    }
+
+    if (ImGui::BeginPopup("Create C++ Component"))
+    {
+        static char buffer[256];
+
+        bool open = ImGui::InputText("Name", buffer, 256, ImGuiInputTextFlags_EnterReturnsTrue);
+
+        ImGui::FocusItem();
+
+        if (ImGui::Button("Create") || open)
+        {
+            const std::string name = buffer;
+
+            static auto hpp = Template("assets/templates/component.hpp");
+            static auto cpp = Template("assets/templates/component.cpp");
+
+            std::ofstream file(__state_new_component.path / (name + ".hpp"));
+            file << hpp.get({{"@name", name}});
+            file.close();
+
+            file = std::ofstream(__state_new_component.path / (name + ".cpp"));
+            file << cpp.get({{"@name", name}});
+            file.close();
+
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
     }
 }

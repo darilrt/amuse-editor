@@ -22,6 +22,7 @@
 #include "editor/windows/inspector.hpp"
 #include "editor/windows/preferences.hpp"
 #include "editor/windows/console.hpp"
+#include "editor/windows/components.hpp"
 #include "visual_editor/visual_component.hpp"
 
 #include "debug_component.hpp"
@@ -355,17 +356,31 @@ void Editor::run()
     style_imgui();
     load_icons_texture();
 
+    icon_size = 16.0f;
+
     // Regist native windows
     register_window<HierarchyEditor>("Hierarchy");
     register_window<FilesEditor>("Files");
     register_window<SceneEditor>("Scene");
     register_window<InspectorEditor>("Inspector");
     register_window<ConsoleEditor>("Console");
+    register_window<ComponentsEditor>("Components");
     // register_window<PreferencesEditor>("Preferences");
     // register_window<VisualComponentEditor>("Visual Component");
 
     /// DEBUG PROPOSAL
-    // open_project("C:/amuse/projects/Test");
+
+    std::filesystem::path project_path = workspace_path / "Test";
+
+    if (std::filesystem::exists(project_path))
+    {
+        open_project(project_path);
+    }
+    else
+    {
+        create_project(project_path, "Test");
+        open_project(project_path);
+    }
 
     while (window.is_open)
     {
