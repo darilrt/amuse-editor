@@ -3,7 +3,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 
-float ui::center = 0.35;
+float ui::center = 0.35f;
 
 void label_text(const char *label, const float center)
 {

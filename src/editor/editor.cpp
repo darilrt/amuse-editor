@@ -274,7 +274,7 @@ void Editor::main_menu_bar()
 
             create_project(project_path, project_name);
 
-            project_name == "";
+            project_name[0] = '\0';
 
             open_project(project_path);
 
@@ -310,7 +310,7 @@ void Editor::main_menu_bar()
 
         static int item_current = 0;
 
-        ImGui::ListBox("Projects", &item_current, projects.data(), projects.size());
+        ImGui::ListBox("Projects", &item_current, projects.data(), (int)projects.size());
 
         if (ImGui::Button("Open", ImVec2(120, 0)))
         {

@@ -78,7 +78,7 @@ void InspectorEditor::on_gui()
     char buffer[256];
     strcpy_s(buffer, editor->selected_actor->name.c_str());
 
-    auto height = (ImGui::CalcTextSize("Name").y + ImGui::GetStyle().FramePadding.y * 2.0) / 2.0f - icon_size / 2.0f;
+    float height = (ImGui::CalcTextSize("Name").y + ImGui::GetStyle().FramePadding.y * 2.0f) / 2.0f - icon_size / 2.0f;
 
     auto style = ImGui::GetStyle();
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + height);
