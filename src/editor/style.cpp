@@ -6,9 +6,9 @@ void style_imgui()
     float font_size_scaling = 1.5f;
 
     auto &io = ImGui::GetIO();
-    io.Fonts->AddFontFromFileTTF("assets/fonts/JetBrainsMono-Medium.ttf", 16.0f * font_size_scaling);
-    io.Fonts->AddFontFromFileTTF("assets/fonts/JetBrainsMono-Medium.ttf", 8.0f);
-    io.Fonts->AddFontFromFileTTF("assets/fonts/JetBrainsMono-Medium.ttf", 64.0f);
+    io.Fonts->AddFontFromFileTTF("data/fonts/JetBrainsMono-Medium.ttf", 16.0f * font_size_scaling);
+    io.Fonts->AddFontFromFileTTF("data/fonts/JetBrainsMono-Medium.ttf", 8.0f);
+    io.Fonts->AddFontFromFileTTF("data/fonts/JetBrainsMono-Medium.ttf", 64.0f);
 
     io.Fonts->Fonts[0]->Scale = 1.0f / font_size_scaling;
 
