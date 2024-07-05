@@ -181,7 +181,7 @@ void draw_directory_helper(const std::filesystem::path &path, Editor *editor)
 
                 ImGui::SetDragDropPayload(payload_id.c_str(), nullptr, 0, ImGuiCond_Once);
 
-                ImGui::Text(filename.c_str());
+                ImGui::Text("%s", filename.c_str());
 
                 ImGui::EndDragDropSource();
             }

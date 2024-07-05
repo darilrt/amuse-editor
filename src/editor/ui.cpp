@@ -16,7 +16,7 @@ void label_text(const char *label, const float center)
     ImVec2 text_size = ImGui::CalcTextSize(label);
 
     ImGui::SetCursorScreenPos(ImVec2(pos.x + text_col_width - text_size.x - style.FramePadding.x, pos.y + style.FramePadding.y));
-    ImGui::Text(label);
+    ImGui::Text("%s", label);
     ImGui::SetCursorScreenPos(ImVec2(pos.x + text_col_width + style.FramePadding.x, pos.y));
 }
 
