@@ -10,7 +10,6 @@ enum __gui_asset_flags : uint32_t
 {
     None = 0,
     Leaf = 1,
-    Open = 2,
 };
 
 bool __gui_asset(
