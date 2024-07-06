@@ -364,7 +364,7 @@ void Editor::run()
     register_window<SceneEditor>("Scene");
     register_window<InspectorEditor>("Inspector");
     register_window<ConsoleEditor>("Console");
-    register_window<ComponentsEditor>("Components");
+    register_window<AssetsEditor>("Assets");
     // register_window<PreferencesEditor>("Preferences");
     // register_window<VisualComponentEditor>("Visual Component");
 

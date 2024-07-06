@@ -2,7 +2,7 @@
 
 #include "editor/editor_window.hpp"
 
-class ComponentsEditor : public EditorWindow
+class AssetsEditor : public EditorWindow
 {
 public:
     void on_init() override;
