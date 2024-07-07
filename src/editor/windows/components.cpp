@@ -88,7 +88,7 @@ bool __gui_asset(
     ImGui::SetCursorPos(Vec2(
         ImGui::GetCursorPosX() + style.FramePadding.x,
         pos.y + style.FramePadding.y + (icon_size / 2.0f) - (text_size.y / 2.0f)));
-    ImGui::Text(name);
+    ImGui::Text("%s", name);
 
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + style.FramePadding.y);
 

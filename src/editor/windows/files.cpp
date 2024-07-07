@@ -5,6 +5,7 @@
 #include "editor/windows/files.hpp"
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
+#include "imgui/misc/cpp/imgui_stdlib.h"
 #include "editor/editor.hpp"
 #include "icons.hpp"
 #include "templates.hpp"
@@ -14,16 +15,16 @@ static std::filesystem::path rename_path;
 void rename_file_or_folder_helper(std::filesystem::path path)
 {
     static std::string ext;
-    static char buffer[256];
+    static std::string buffer;
 
     if (std::filesystem::is_directory(path))
     {
-        strcpy_s(buffer, path.filename().string().c_str());
+        buffer = path.filename().string();
         ext = "";
     }
     else
     {
-        strcpy_s(buffer, path.stem().string().c_str());
+        buffer = path.stem().string();
         ext = path.extension().string();
     }
 
@@ -34,7 +35,7 @@ void rename_file_or_folder_helper(std::filesystem::path path)
 
     ImGui::SetKeyboardFocusHere(0);
 
-    ImGui::InputText("Hello", buffer, 256, ImGuiInputTextFlags_EnterReturnsTrue);
+    ImGui::InputText("##", &buffer, ImGuiInputTextFlags_EnterReturnsTrue);
 
     ImGui::PopStyleVar();
     ImGui::PopStyleColor();
@@ -57,9 +58,9 @@ void rename_file_or_folder_helper(std::filesystem::path path)
         ImGui::SetKeyboardFocusHere(-1);
         rename_path = "";
 
-        if (!std::filesystem::exists(path.parent_path() / (std::string(buffer) + ext)))
+        if (!std::filesystem::exists(path.parent_path() / (buffer + ext)))
         {
-            std::filesystem::rename(path, path.parent_path() / (std::string(buffer) + ext));
+            std::filesystem::rename(path, path.parent_path() / (buffer + ext));
         }
     }
 }
