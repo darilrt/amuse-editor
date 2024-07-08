@@ -1,6 +1,7 @@
 #include "editor/windows/inspector.hpp"
 #include "editor/editor.hpp"
 #include "imgui/imgui.h"
+#include "imgui/misc/cpp/imgui_stdlib.h"
 #include "icons.hpp"
 
 #include "inspectors/transform.hpp"
@@ -75,8 +76,8 @@ void InspectorEditor::on_gui()
     if (editor->selected_actor == nullptr)
         return;
 
-    char buffer[256];
-    strcpy_s(buffer, editor->selected_actor->name.c_str());
+    std::string buffer;
+    buffer = editor->selected_actor->name;
 
     float height = (ImGui::CalcTextSize("Name").y + ImGui::GetStyle().FramePadding.y * 2.0f) / 2.0f - icon_size / 2.0f;
 
@@ -85,7 +86,7 @@ void InspectorEditor::on_gui()
     ImGui::Image(ICON_OBJECT);
     ImGui::SameLine();
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() - height);
-    if (ImGui::InputText("Name", buffer, 256, ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::InputText("Name", &buffer, ImGuiInputTextFlags_EnterReturnsTrue))
     {
         editor->selected_actor->name = buffer;
         editor->set_edited();
