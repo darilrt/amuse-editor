@@ -7,6 +7,7 @@
 #include "imgui/imgui_internal.h"
 #include "imgui/misc/cpp/imgui_stdlib.h"
 #include "editor/editor.hpp"
+#include "editor/ui.hpp"
 #include "icons.hpp"
 #include "templates.hpp"
 
@@ -181,11 +182,11 @@ void draw_directory_helper(const std::filesystem::path &path, Editor *editor)
         }
         else if (entry.is_directory())
         {
-            open = ImGui::TreeNodeEx(entry.path().filename().string().c_str(), flags);
+            open = ui::TreeNodeFileExplorer(ICON_FOLDER, entry.path().filename().string().c_str(), false);
         }
         else
         {
-            ImGui::TreeNodeEx(filename.c_str(), flags | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
+            ui::TreeNodeFileExplorer(ICON_EMPTY_FILE, entry.path().filename().string().c_str(), true);
 
             if (ImGui::IsMouseDoubleClicked(ImGuiPopupFlags_MouseButtonLeft) && ImGui::IsItemHovered())
             {
@@ -250,7 +251,7 @@ void FilesEditor::on_gui()
 
     const std::filesystem::path asset_path = editor->current_project_path / "assets";
 
-    bool open = ImGui::TreeNodeEx("assets", flags);
+    bool open = ui::TreeNodeFileExplorer(ICON_FOLDER, "assets", false);
 
     if (ImGui::BeginPopupContextItem())
     {

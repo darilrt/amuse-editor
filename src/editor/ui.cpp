@@ -98,10 +98,6 @@ bool ui::TreeNodeFileExplorer(void *icon, const ImVec2 &_icon_size, const ImVec2
 
     ImVec2 text_pos(window->DC.CursorPos.x + padding.x, window->DC.CursorPos.y + padding.y);
 
-    ImGui::ItemSize(frame_bb, style.FramePadding.y);
-    if (!ImGui::ItemAdd(frame_bb, id))
-        return false;
-
     bool hovered, held;
     bool pressed = ImGui::ButtonBehavior(frame_bb, id, &hovered, &held, 0);
 
@@ -117,9 +113,10 @@ bool ui::TreeNodeFileExplorer(void *icon, const ImVec2 &_icon_size, const ImVec2
     // Render
 
     if (hovered || held)
-    {
         ImGui::RenderFrame(frame_bb.Min, frame_bb.Max, bg_col, true, 0);
-    }
+
+    if (g.NavId == id)
+        ImGui::RenderNavHighlight(frame_bb, id);
 
     if (!leaf)
     {
@@ -141,7 +138,12 @@ bool ui::TreeNodeFileExplorer(void *icon, const ImVec2 &_icon_size, const ImVec2
 
     window->DC.CursorPos.y = frame_bb.Max.y;
 
-    if (is_open)
+    window->DC.CursorPos = frame_bb.Min;
+    ImGui::ItemSize(frame_bb, style.FramePadding.y);
+    if (!ImGui::ItemAdd(frame_bb, id))
+        return false;
+
+    if (is_open && !leaf)
     {
         ImGui::TreePush(label);
     }
