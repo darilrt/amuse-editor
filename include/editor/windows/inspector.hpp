@@ -18,8 +18,8 @@ public:
     template <typename T>
     void register_custom_inspector(const std::string &name)
     {
-        constexpr bool has_on_inspector = requires(const T &t) {
-            T::on_inspector();
+        constexpr bool has_on_inspector = requires(const T &t, Component *component) {
+            T::on_inspector(component);
         };
 
         Shared<CustomInspector> inspector = new_shared<CustomInspector>();
@@ -29,8 +29,8 @@ public:
             inspector->on_inspector = T::on_inspector;
         }
 
-        constexpr bool has_on_scene_gui = requires(const T &t) {
-            T::on_scene_gui();
+        constexpr bool has_on_scene_gui = requires(const T &t, Component *component) {
+            T::on_scene_gui(component);
         };
 
         if constexpr (has_on_scene_gui)

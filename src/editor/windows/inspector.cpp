@@ -36,7 +36,7 @@ void draw_component_helpers(Actor *actor, Editor *editor, InspectorEditor *inspe
 
             if (custom_inspector)
             {
-                custom_inspector->on_inspector();
+                custom_inspector->on_inspector(component.get());
             }
             else
             {
