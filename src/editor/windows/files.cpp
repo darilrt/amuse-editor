@@ -321,8 +321,8 @@ void FilesEditor::on_gui()
         {
             const std::string name = buffer;
 
-            static auto hpp = Template("assets/templates/component.hpp");
-            static auto cpp = Template("assets/templates/component.cpp");
+            static auto hpp = Template("data/templates/component.hpp");
+            static auto cpp = Template("data/templates/component.cpp");
 
             std::ofstream file(__state_new_component.path / (name + ".hpp"));
             file << hpp.get({{"@name", name}});

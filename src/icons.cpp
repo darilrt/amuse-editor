@@ -7,8 +7,8 @@ void load_icons_texture()
 {
     icons_texture = Texture::from_file(
         "data/icons/icons.png",
-        gfx::SamplerFilter::Nearest,
-        gfx::SamplerFilter::Nearest,
+        gfx::SamplerFilter::Linear,
+        gfx::SamplerFilter::Linear,
         gfx::SamplerWrap::ClampToEdge,
         gfx::SamplerWrap::ClampToEdge);
 }

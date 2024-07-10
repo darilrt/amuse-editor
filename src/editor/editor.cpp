@@ -179,7 +179,7 @@ void Editor::open(const std::filesystem::path &path)
 
         selected_actor = engine->root_actor;
     }
-    else if (ext == ".cpp" || ext == ".h")
+    else if (ext == ".cpp" || ext == ".hpp")
     {
         system(("code " + path.string()).c_str());
     }

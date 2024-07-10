@@ -1,10 +1,82 @@
+#include <logger.hpp>
+#include <imgui/imgui.h>
+#include <imgui/imgui_internal.h>
+
 #include "editor/windows/inspector.hpp"
 #include "editor/editor.hpp"
-#include "imgui/imgui.h"
 #include "imgui/misc/cpp/imgui_stdlib.h"
 #include "icons.hpp"
 
 #include "inspectors/transform.hpp"
+
+bool __TreeNodeComponent(const char *label, bool *enabled, bool *remove)
+{
+    ImGuiWindow *window = ImGui::GetCurrentWindow();
+    ImGuiContext &g = *GImGui;
+    ImGuiID id = window->GetID(label);
+
+    ImRect frame_bb(window->DC.CursorPos, ImVec2(0.0, 0.0));
+    frame_bb.Max.x = window->WorkRect.Max.x;
+    frame_bb.Max.y = window->DC.CursorPos.y + g.FontSize + g.Style.FramePadding.y * 2;
+
+    ImVec2 text_pos(window->DC.CursorPos.x + g.Style.ItemSpacing.x, window->DC.CursorPos.y + g.Style.FramePadding.y);
+
+    bool is_open = ImGui::TreeNodeUpdateNextOpen(id, 0);
+
+    window->DC.CursorPos = text_pos;
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+    ImGui::Checkbox("##", enabled);
+    ImGui::PopStyleVar();
+    ImGui::SameLine();
+
+    if (is_open)
+        ImGui::Image(ICON_ARROW_DOWN);
+    else
+        ImGui::Image(ICON_ARROW_RIGHT);
+
+    ImGui::SameLine();
+
+    text_pos.x = window->DC.CursorPos.x;
+
+    window->DC.CursorPos.x = frame_bb.Max.x - icon_size - g.Style.FramePadding.x;
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+    if (ImGui::ImageButton(ICON_CROSS_V2))
+    {
+        *remove = true;
+    }
+    ImGui::PopStyleVar();
+
+    bool hovered, held;
+    bool pressed = ImGui::ButtonBehavior(frame_bb, id, &hovered, &held, 0);
+
+    const ImU32 bg_col = ImGui::GetColorU32((held && hovered) ? ImGuiCol_HeaderActive : hovered ? ImGuiCol_HeaderHovered
+                                                                                                : ImGuiCol_Header);
+    if (hovered)
+        ImGui::RenderFrame(frame_bb.Min, frame_bb.Max, bg_col, true, 0.0f);
+
+    ImGui::RenderTextEllipsis(
+        window->DrawList,
+        text_pos,
+        window->ClipRect.Max,
+        window->ClipRect.Max.x,
+        window->ClipRect.Max.x,
+        label, nullptr, nullptr);
+
+    if (pressed && hovered)
+    {
+        ImGui::TreeNodeSetOpen(id, !is_open);
+    }
+
+    window->DC.CursorPos = frame_bb.Min;
+    ImGui::ItemSize(frame_bb, 0);
+    if (!ImGui::ItemAdd(frame_bb, id))
+        return false;
+
+    if (is_open)
+        ImGui::TreePush(label);
+
+    return is_open;
+}
 
 void draw_component_helpers(Actor *actor, Editor *editor, InspectorEditor *inspector)
 {
@@ -13,13 +85,11 @@ void draw_component_helpers(Actor *actor, Editor *editor, InspectorEditor *inspe
     for (auto &component : actor->components)
     {
         ImGui::PushID(component.get());
-        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4, 0));
-        ImGui::Checkbox("##", &component->enabled);
-        ImGui::SameLine();
 
-        bool open = ImGui::TreeNodeEx(component->_name.c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_AllowOverlap);
-        ImGui::SameLine(ImGui::GetContentRegionMax().x - 20);
-        if (ImGui::Button("×"))
+        bool remove = false;
+        bool open = __TreeNodeComponent((component->_name + "##COMPONENT").c_str(), &component->enabled, &remove);
+
+        if (remove)
         {
             editor->set_status(
                 [component](Editor *editor)
@@ -28,13 +98,12 @@ void draw_component_helpers(Actor *actor, Editor *editor, InspectorEditor *inspe
             to_remove.push_back(component);
             editor->set_edited();
         }
-        ImGui::PopStyleVar();
 
         if (open)
         {
             auto custom_inspector = inspector->get_custom_inspector(component->_name);
 
-            if (custom_inspector)
+            if (custom_inspector != nullptr)
             {
                 custom_inspector->on_inspector(component.get());
             }
@@ -61,9 +130,9 @@ void InspectorEditor::on_init()
     class DebugComponentInspector
     {
     public:
-        static void on_inspector()
+        static void on_inspector(Component *component)
         {
-            ImGui::Button("Debug inspector");
+            ImGui::Text("Debug component inspector");
         };
     };
 

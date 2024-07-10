@@ -1,9 +1,13 @@
 #include <fstream>
+#include <filesystem>
+#include <cassert>
 
 #include "templates.hpp"
 
 Template::Template(const std::filesystem::path &path)
 {
+    assert(std::filesystem::exists(path) && "Template file does not exist.");
+
     std::ifstream file(path);
 
     tmpl_src = std::string((std::istreambuf_iterator<char>(file)),
